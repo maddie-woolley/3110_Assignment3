@@ -68,8 +68,6 @@ AvlNode *leftRotate(AvlNode *x){
 }
 
 void insert( const int & info, AvlNode * & root ) {
-    cout << "As of now, I am implementing a dummy insert" << endl;
-    cout << "Code for inserting " << info << " goes here" << endl;
 
     if (root == NULL) {
         root = new AvlNode(info, NULL, NULL);
