@@ -13,21 +13,107 @@ using namespace std;
  * t is the node that roots the subtree.
  * Set the new root of the subtree.
  */
-void insert( const int & info, AvlNode * & root )
-{
-  std::cout << "As of now, I am implementing a dummy insert" << endl;
-  std::cout << "Code for inserting " << info << " goes here" << endl;
-
-  if (root == NULL)
-    root = new AvlNode (info, NULL, NULL);
-  else if (info % 2 == 0){
-    // for now, even numbers to the left ... [CHANGE THIS]
-    insert( info, root->left );
-  } else {
-    // and off numbers to the right [CHANGE THIS]
-    insert( info, root->right );
-  }
+// aux method to figure max between 2 nodes
+int max(int a, int b){
+    if (a>b){
+        return a;
+    }
+    else{
+        return b;
+    }
 }
+//aux method to figure depth of a subtree
+int depth(AvlNode *n){
+    if (n== NULL){
+        return 0;
+    }
+    else {
+        return n->height;
+    }
+}
+// aux method to check if tree is balance
+int getBalance(AvlNode *N){
+    if (N==NULL){
+        return 0;
+    }
+    else{
+        return (depth(N->left)- depth(N->right));
+    }
+}
+// right rotate the subtree roted with y
+AvlNode *rightRotate(AvlNode *y){
+    AvlNode *x = y->left;
+    AvlNode *T2 = x->right;
+    //perform rotations
+    x->right = y;
+    y->left = T2;
+    //update heights
+    y->height = max(depth(y->left), depth(y->right))+1;
+    x->height = max(depth(x->left), depth(x->right))+1;
+    //return new root
+    return x;
+}
+// left rotate the subtree rooted with x
+AvlNode *leftRotate(AvlNode *x){
+    AvlNode *y = x->left;
+    AvlNode *T2 = y->right;
+    //perform rotations
+    y->left = x;
+    x->right = T2;
+    //update heights
+    x->height = max(depth(x->left), depth(x->right))+1;
+    y->height = max(depth(y->left), depth(y->right))+1;
+    //return new root
+    return y;
+}
+
+void insert( const int & info, AvlNode * & root ) {
+    cout << "As of now, I am implementing a dummy insert" << endl;
+    cout << "Code for inserting " << info << " goes here" << endl;
+
+    if (root == NULL) {
+        root = new AvlNode(info, NULL, NULL);
+    }
+    //for left keys
+    if (info < root->element) {
+        insert(info, root->left);
+    }
+        //for right keys
+    else if (info > root->element) {
+        insert(info, root->right);
+    }
+    root->height = 1 + max(depth(root->left), depth(root->right));
+    //issues here i sense
+    int balance = getBalance(root);
+
+    //LL case
+    if (balance > 1 && info < root->element) {
+        rightRotate(root);
+    }
+    //RR case
+    if (balance < -1 && info > root->element) {
+        leftRotate(root);
+    }
+    //LR case
+    if (balance > 1 && info > root->element){
+        root->left = leftRotate(root->left);
+        leftRotate(root);
+    }
+    //RL case
+    if (balance < -1 && info <root->element){
+        root->right = rightRotate(root->right);
+        leftRotate(root);
+    }
+}
+// aux to find the minimum value
+AvlNode *minValueNode(AvlNode* node){
+    AvlNode* current = node;
+    while (current->left != NULL){
+        current = current->left;
+    }
+    return current;
+}
+
 
 /**
  * Internal method to remove from a subtree.
@@ -36,7 +122,8 @@ void insert( const int & info, AvlNode * & root )
  * Set the new root of the subtree.
  */
 void remove( const int & info, AvlNode * & root ) {
-  std::cout << "Code for deleting " << info << " goes here" << endl;
+    std::cout << "Code for deleting " << info << " goes here" << endl;
+
 }
 
 /*
@@ -50,30 +137,30 @@ void remove( const int & info, AvlNode * & root ) {
  * Print methods, do not change
  */
 void print(AvlNode *root, int level, int type) {
-  if (root == NULL) {
-    return;
-  }
-  if (type == IS_ROOT) {
-    std::cout << root -> element << "\n";
-  } else {
-    for (int i = 1; i < level; i++) {
-      std::cout << "| ";
+    if (root == NULL) {
+        return;
     }
-    if (type == IS_LEFT) {
-      std::cout << "|l_" << root -> element << "\n";
+    if (type == IS_ROOT) {
+        std::cout << root -> element << "\n";
     } else {
-      std::cout << "|r_" << root -> element << "\n";
+        for (int i = 1; i < level; i++) {
+            std::cout << "| ";
+        }
+        if (type == IS_LEFT) {
+            std::cout << "|l_" << root -> element << "\n";
+        } else {
+            std::cout << "|r_" << root -> element << "\n";
+        }
     }
-  }
-  if (root -> left != NULL) {
-    print(root -> left, level + 1, IS_LEFT);
-  }
-  if (root -> right != NULL) {
-    print(root -> right, level + 1, IS_RIGHT);
-  }
+    if (root -> left != NULL) {
+        print(root -> left, level + 1, IS_LEFT);
+    }
+    if (root -> right != NULL) {
+        print(root -> right, level + 1, IS_RIGHT);
+    }
 }
 void print(AvlNode *root) {
-  print(root, 0, IS_ROOT);
+    print(root, 0, IS_ROOT);
 }
 /*
  * END Print methods, do not change
@@ -84,28 +171,29 @@ void print(AvlNode *root) {
  * Main method, do not change
  */
 int main(int argc, const char * argv[]) {
-  AvlNode *root = NULL;
-  std::string filename = argv[1];
-  freopen(filename.c_str(), "r", stdin);
-  std::string input;
-  int data;
-  while(std::cin >> input){
-    if (input == "insert"){
-      std::cin>>data;
-      insert(data, root);
-    } else if(input == "delete"){
-      std::cin>>data;
-      remove(data, root);
-    } else if(input == "print"){
-      print(root);
-      std::cout << "\n";
-    } else{
-      std::cout<<"Data not consistent in file";
-      break;
+    AvlNode *root = NULL;
+    std::string filename = argv[1];
+    freopen(filename.c_str(), "r", stdin);
+    std::string input;
+    int data;
+    while(std::cin >> input){
+        if (input == "insert"){
+            std::cin>>data;
+            insert(data, root);
+        } else if(input == "delete"){
+            std::cin>>data;
+            remove(data, root);
+        } else if(input == "print"){
+            print(root);
+            std::cout << "\n";
+        } else{
+            std::cout<<"Data not consistent in file";
+            break;
+        }
     }
-  }
-  return 0;
+    return 0;
 }
 /*
  * END main method
  */
+
