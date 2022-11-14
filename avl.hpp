@@ -7,6 +7,7 @@ struct AvlNode {
     AvlNode (const int & ele, AvlNode *lt, AvlNode *rt, int h = 0) {
         element = ele;
         left = lt;
-        right = rt; 
+        right = rt;
+        height = 1;
     }
 };

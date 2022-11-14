@@ -24,14 +24,15 @@ int max(int a, int b){
 }
 //aux method to figure depth of a subtree
 int depth(AvlNode *n){
-    if (n== NULL){
-        return 0;
-    }
-    else {
-        return n->height;
-    }
+  if (n==NULL){
+      return 0;
+  }
+  else{
+      return n->height;
+  }
 }
-// aux method to check if tree is balance
+
+// aux method to check if tree is balanced
 int getBalance(AvlNode *N){
     if (N==NULL){
         return 0;
@@ -40,23 +41,25 @@ int getBalance(AvlNode *N){
         return (depth(N->left)- depth(N->right));
     }
 }
-// right rotate the subtree roted with y
-AvlNode *rightRotate(AvlNode *y){
+
+// right rotate the subtree rooted with y
+AvlNode *rightRotate(AvlNode *y) {
     AvlNode *x = y->left;
     AvlNode *T2 = x->right;
-    //perform rotations
     x->right = y;
     y->left = T2;
-    //update heights
-    y->height = max(depth(y->left), depth(y->right))+1;
-    x->height = max(depth(x->left), depth(x->right))+1;
-    //return new root
+    y->height = max(depth(y->left),
+                    depth(y->right)) +
+                1;
+    x->height = max(depth(x->left),
+                    depth(x->right)) +
+                1;
     return x;
 }
 // left rotate the subtree rooted with x
-AvlNode *leftRotate(AvlNode *x){
-    AvlNode *y = x->left;
-    AvlNode *T2 = y->right;
+AvlNode *leftRotate(AvlNode * & x){
+    AvlNode *y = x->right;
+    AvlNode *T2 = y->left;
     //perform rotations
     y->left = x;
     x->right = T2;
@@ -67,50 +70,49 @@ AvlNode *leftRotate(AvlNode *x){
     return y;
 }
 
-void insert( const int & info, AvlNode * & root ) {
+void insert ( const int & info, AvlNode * & root) {
 
     if (root == NULL) {
         root = new AvlNode(info, NULL, NULL);
     }
     //for left keys
     if (info < root->element) {
+        cout<<"Insert"<<info<<endl;
         insert(info, root->left);
     }
-        //for right keys
+    //for right keys
     else if (info > root->element) {
         insert(info, root->right);
     }
+    //update height of ancestor node
     root->height = 1 + max(depth(root->left), depth(root->right));
-    //issues here i sense
     int balance = getBalance(root);
 
-    //LL case
-    if (balance > 1 && info < root->element) {
+    //LL case--you are a problem, depth and such are good
+
+    if ((balance > 1) && (info < root->left->element)) {
+        cout<<"balancing happening first round--LL"<<endl;
         rightRotate(root);
-    }
+   }
     //RR case
-    if (balance < -1 && info > root->element) {
+    if ((balance < -1) && (info > root->element)) {
+        cout<<"balancing happening first round--RR"<<endl;
         leftRotate(root);
     }
     //LR case
-    if (balance > 1 && info > root->element){
+    if ((balance > 1) && (info > root->element)){
+        cout<<"balancing happening first round--LR"<<endl;
         root->left = leftRotate(root->left);
         leftRotate(root);
     }
     //RL case
-    if (balance < -1 && info <root->element){
-        root->right = rightRotate(root->right);
+    if ((balance < -1) && (info < root->right->element)){
+    cout<<"balancing happening first round--RL"<<endl;
+        rightRotate(root->right);
         leftRotate(root);
     }
 }
-// aux to find the minimum value
-AvlNode *minValueNode(AvlNode* node){
-    AvlNode* current = node;
-    while (current->left != NULL){
-        current = current->left;
-    }
-    return current;
-}
+
 
 
 /**
@@ -119,11 +121,19 @@ AvlNode *minValueNode(AvlNode* node){
  * root is the node that roots the subtree.
  * Set the new root of the subtree.
  */
-void remove( const int & info, AvlNode * & root ) {
-    std::cout << "Code for deleting " << info << " goes here" << endl;
 
+//minvalue
+AvlNode *minValueNode(AvlNode* node){
+    AvlNode *current = node;
+    while(current->left != NULL){
+        current = current->left;
+    }
+    return current;
 }
 
+void remove( const int & info, AvlNode * & root ) {
+    std::cout << "Code for deleting " << info << " goes here" << endl;
+}
 /*
  * You will probably neesd auxiliary mathods to 
  *  - find the minimum of tree
