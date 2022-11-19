@@ -3,7 +3,8 @@ insert 30
 insert 20
 insert 50
 print
-delete 100
+delete 30
 print
 insert 990
 insert 900
+print

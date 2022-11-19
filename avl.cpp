@@ -97,7 +97,7 @@ void insert ( const int & info, AvlNode * & root) {
 
     //LL case--you are a problem, depth and such are good
 
-/*
+
     if ((balance > 1) && (info < root->left->element)) {
         rightRotate(root);
    }
@@ -118,8 +118,6 @@ void insert ( const int & info, AvlNode * & root) {
         rightRotate(root->right);
         leftRotate(root);
     }
-*/
-
 }
 
 
@@ -175,6 +173,23 @@ void remove (const int & info, AvlNode * & root ) {
             root->element = temp->element;
             remove(temp->element,root->right);
         }
+    }
+    root->height = 1 + max(depth(root->left), depth(root->right));
+    int balance = getBalance(root);
+
+    if ((balance > 1) && (getBalance(root->left)>=0)){
+        rightRotate(root);
+    }
+    if (balance >1 && getBalance(root->left)<0){
+        leftRotate(root->left);
+        rightRotate(root);
+    }
+    if (balance <-1 && getBalance(root->right)<=0){
+        leftRotate(root);
+    }
+    if (balance <-1 && getBalance(root->right)>0){
+        root->right = rightRotate(root->right);
+        leftRotate(root);
     }
 }
 /*
