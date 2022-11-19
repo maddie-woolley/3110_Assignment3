@@ -75,7 +75,6 @@ AvlNode *leftRotate(AvlNode *x){
     //return new root
     return y;
 }
-
 void insert ( const int & info, AvlNode * & root) {
 
     if (root == NULL) {
@@ -101,6 +100,7 @@ void insert ( const int & info, AvlNode * & root) {
     if ((balance > 1) && (info < root->left->element)) {
         rightRotate(root);
    }
+
     //RR case
     if ((balance < -1) && (info > root->element)) {
         cout<<"balancing happening first round--RR"<<endl;
@@ -119,8 +119,6 @@ void insert ( const int & info, AvlNode * & root) {
         leftRotate(root);
     }
 }
-
-
 
 /**
  * Internal method to remove from a subtree.
