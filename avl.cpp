@@ -43,7 +43,14 @@ int getBalance(AvlNode *N){
         return (depth(N->left)- depth(N->right));
     }
 }
-
+//minvalue
+AvlNode *minValueNode(AvlNode* node){
+    AvlNode *current = node;
+    while(current->left != NULL){
+        current = current->left;
+    }
+    return current;
+}
 // right rotate the subtree rooted with y
 AvlNode *rightRotate(AvlNode *y) {
     AvlNode *x = y->left;
@@ -78,7 +85,7 @@ AvlNode *leftRotate(AvlNode *x){
 void insert ( const int & info, AvlNode * & root) {
 
     if (root == NULL) {
-        root = new AvlNode(info, NULL, NULL, 0 );
+        root = new AvlNode(info, NULL, NULL, 1 );
     }
     //for left keys
     if (info < root->element){
@@ -95,26 +102,25 @@ void insert ( const int & info, AvlNode * & root) {
     int balance = getBalance(root);
 
     //LL case--you are a problem, depth and such are good
-
-
     if ((balance > 1) && (info < root->left->element)) {
+        cout<<"balancing happening - LL"<<endl;
         rightRotate(root);
    }
 
     //RR case
     if ((balance < -1) && (info > root->element)) {
-        cout<<"balancing happening first round--RR"<<endl;
+        cout<<"balancing happening --RR"<<endl;
         leftRotate(root);
     }
     //LR case
     if ((balance > 1) && (info > root->element)){
-        cout<<"balancing happening first round--LR"<<endl;
+        cout<<"balancing happening --LR"<<endl;
         leftRotate(root->left);
         leftRotate(root);
     }
     //RL case
     if ((balance < -1) && (info < root->right->element)){
-    cout<<"balancing happening first round--RL"<<endl;
+    cout<<"balancing happening --RL"<<endl;
         rightRotate(root->right);
         leftRotate(root);
     }
@@ -127,17 +133,8 @@ void insert ( const int & info, AvlNode * & root) {
  * Set the new root of the subtree.
  */
 
-//minvalue
-AvlNode *minValueNode(AvlNode* node){
-    AvlNode *current = node;
-    while(current->left != NULL){
-        current = current->left;
-    }
-    return current;
-}
 
 void remove (const int & info, AvlNode * & root ) {
-    cout << "Please" << endl;
     if (info < root->element) {
         remove(info, root->left);
     }
@@ -172,6 +169,7 @@ void remove (const int & info, AvlNode * & root ) {
             remove(temp->element,root->right);
         }
     }
+
     root->height = 1 + max(depth(root->left), depth(root->right));
     int balance = getBalance(root);
 
@@ -190,7 +188,7 @@ void remove (const int & info, AvlNode * & root ) {
         leftRotate(root);
     }
 }
-/*
+/***
  * You will probably need auxiliary methods to
  *  - find the minimum of tree
  *  - rotate (single and double, in both directions
