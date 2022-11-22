@@ -65,7 +65,8 @@ AvlNode *rightRotate(AvlNode *y) {
     x->height = max(depth(x->left), depth(x->right)) + 1;
 
     //return new root
-    return x;
+    y = x;
+    return y;
 }
 
 // left rotate the subtree rooted with x
@@ -80,20 +81,21 @@ AvlNode *leftRotate(AvlNode *x){
     x->height = max(depth(x->left), depth(x->right))+1;
     y->height = max(depth(y->left), depth(y->right))+1;
     //return new root
-    return y;
+    x = y;
+    return x;
 }
-void insert ( const int & info, AvlNode * & root) {
+AvlNode* & insert ( const int & info, AvlNode * & root) {
 
     if (root == NULL) {
         root = new AvlNode(info, NULL, NULL, 1 );
     }
     //for left keys
     if (info < root->element){
-        insert(info, root->left);
+        root->left = insert(info, root->left);
     }
     //for right keys
     else if (info > root->element) {
-        insert(info, root->right);
+        root->right = insert(info, root->right);
     }
 
     //Unlock this section to see how the rotations are working
@@ -104,26 +106,26 @@ void insert ( const int & info, AvlNode * & root) {
     //LL case--you are a problem, depth and such are good
     if ((balance > 1) && (info < root->left->element)) {
         cout<<"balancing happening - LL"<<endl;
-        rightRotate(root);
+        root = rightRotate(root);
    }
-
     //RR case
     if ((balance < -1) && (info > root->element)) {
         cout<<"balancing happening --RR"<<endl;
-        leftRotate(root);
+        root = leftRotate(root);
     }
     //LR case
     if ((balance > 1) && (info > root->element)){
         cout<<"balancing happening --LR"<<endl;
         leftRotate(root->left);
-        leftRotate(root);
+        root = leftRotate(root);
     }
     //RL case
     if ((balance < -1) && (info < root->right->element)){
     cout<<"balancing happening --RL"<<endl;
         rightRotate(root->right);
-        leftRotate(root);
+        root = leftRotate(root);
     }
+    return root;
 }
 
 /**
@@ -135,6 +137,9 @@ void insert ( const int & info, AvlNode * & root) {
 
 
 void remove (const int & info, AvlNode * & root ) {
+    if (root ==NULL){
+        return;
+    }
     if (info < root->element) {
         remove(info, root->left);
     }
@@ -176,7 +181,7 @@ void remove (const int & info, AvlNode * & root ) {
     if ((balance > 1) && (getBalance(root->left)>=0)){
         rightRotate(root);
     }
-    if (balance >1 && getBalance(root->left)<0){
+    if (balance >1 && getBalance(root->left)<0) {
         leftRotate(root->left);
         rightRotate(root);
     }
