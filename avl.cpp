@@ -121,13 +121,13 @@ AvlNode* & insert ( const int & info, AvlNode * & root) {
     //LR case
     if ((balance > 1) && (info > root->element)){
         cout<<"balancing happening --LR"<<endl;
-        leftRotate(root->left);
+        root->left = leftRotate(root->left);
         root = leftRotate(root);
     }
     //RL case
     if ((balance < -1) && (info < root->right->element)){
     cout<<"balancing happening --RL"<<endl;
-        rightRotate(root->right);
+        root->right = rightRotate(root->right);
         root = leftRotate(root);
     }
     //return the node pointer
@@ -173,11 +173,10 @@ AvlNode* & remove(const int & info, AvlNode * & root){
         //node with 2 children, get the smallest in the right subtree
         else{
             AvlNode *temp = minValueNode(root->right);
-            //copy the node to the temp
+            //copy the new root to the temp
             root->element = temp->element;
             // and delete the original node
-            remove(temp->element, root->right);
-
+            root->right = remove(info, root->right);
         }
     }
     // and return (for 1 child case)
