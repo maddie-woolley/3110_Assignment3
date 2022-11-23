@@ -22,9 +22,9 @@ int max(int a, int b){
         return b;
     }
 }
-
-//aux method to figure depth of a subtree
-
+//Function: Depth
+//Inputs: Node
+//Returns : Height of inputting node
 int depth(AvlNode *n){
   if (n==NULL){
       return 0;
@@ -34,7 +34,9 @@ int depth(AvlNode *n){
   }
 }
 
-// aux method to check if tree is balanced
+//Function: GetBalance
+// Inputs: Root node
+// Returns : Number representing balance factor , 0 = balanced
 int getBalance(AvlNode *N){
     if (N==NULL){
         return 0;
@@ -43,7 +45,9 @@ int getBalance(AvlNode *N){
         return (depth(N->left)- depth(N->right));
     }
 }
-//minvalue
+//Function: Min Value
+//Inputs: Root Node
+//Returns: Minimum node in left tree
 AvlNode *minValueNode(AvlNode* node){
     AvlNode *current = node;
     while(current->left != NULL){
@@ -53,6 +57,7 @@ AvlNode *minValueNode(AvlNode* node){
 }
 // right rotate the subtree rooted with y
 AvlNode *rightRotate(AvlNode *y) {
+    //make temp nodes
     AvlNode *x = y->left;
     AvlNode *T2 = x->right;
 
@@ -65,13 +70,13 @@ AvlNode *rightRotate(AvlNode *y) {
     x->height = max(depth(x->left), depth(x->right)) + 1;
 
     //return new root
-    y = x;
-    return y;
+    //y = x;
+    return x;
 }
 
 // left rotate the subtree rooted with x
 AvlNode *leftRotate(AvlNode *x){
-
+    //make temp nodes
     AvlNode *y = x->right;
     AvlNode *T2 = y->left;
     //perform rotations
@@ -81,13 +86,12 @@ AvlNode *leftRotate(AvlNode *x){
     x->height = max(depth(x->left), depth(x->right))+1;
     y->height = max(depth(y->left), depth(y->right))+1;
     //return new root
-    x = y;
-    return x;
+    return y;
 }
 AvlNode* & insert ( const int & info, AvlNode * & root) {
 
     if (root == NULL) {
-        root = new AvlNode(info, NULL, NULL, 1 );
+        root = new AvlNode(info, NULL, NULL);
     }
     //for left keys
     if (info < root->element){
@@ -98,12 +102,13 @@ AvlNode* & insert ( const int & info, AvlNode * & root) {
         root->right = insert(info, root->right);
     }
 
-    //Unlock this section to see how the rotations are working
-    //Update height of ancestor node
-    root->height = 1 + max(depth(root->left), depth(root->right));
-    int balance = getBalance(root);
 
-    //LL case--you are a problem, depth and such are good
+    //Update height
+    root->height = 1 + max(depth(root->left), depth(root->right));
+    //check if tree is balanced
+    int balance = getBalance(root);
+    //if not balanced
+    //LL Case
     if ((balance > 1) && (info < root->left->element)) {
         cout<<"balancing happening - LL"<<endl;
         root = rightRotate(root);
@@ -125,6 +130,7 @@ AvlNode* & insert ( const int & info, AvlNode * & root) {
         rightRotate(root->right);
         root = leftRotate(root);
     }
+    //return the node pointer
     return root;
 }
 
@@ -136,62 +142,72 @@ AvlNode* & insert ( const int & info, AvlNode * & root) {
  */
 
 
-void remove (const int & info, AvlNode * & root ) {
+AvlNode* & remove(const int & info, AvlNode * & root){
     if (root ==NULL){
-        return;
+        return root;
     }
+    //if the number is smaller than root
     if (info < root->element) {
-        remove(info, root->left);
+        root->left = remove(info, root->left);
     }
+    //if the number is bigger than root
     if (info > root->element) {
-        remove(info, root->right);
+        root->right = remove(info, root->right);
     }
+    //if the number is the root
     else {
-        if (root->left == NULL) {
-            AvlNode *temp = root->right;
-            if (temp == NULL) {
-                temp = root;
-                root = NULL;
-            } else {
-                *root = *temp;
-                free(temp);
-            }
-        }
-        if (root->right == NULL) {
-            AvlNode *temp = root->left;
+        // node has 1 or 0 children
+        if ((root->left == NULL)||(root->right ==NULL)) {
+            AvlNode *temp = root->left ? root->left : root->right;
+            // node has no children
             if (temp == NULL) {
                 temp = root;
                 root = NULL;
             }
+            // one child
             else {
                 *root = *temp;
                 free(temp);
             }
         }
+        //node with 2 children, get the smallest in the right subtree
         else{
             AvlNode *temp = minValueNode(root->right);
+            //copy the node to the temp
             root->element = temp->element;
-            remove(temp->element,root->right);
+            // and delete the original node
+            remove(temp->element, root->right);
+
         }
     }
-
+    // and return (for 1 child case)
+    if (root==NULL){
+        return root;
+    }
+    //update height
     root->height = 1 + max(depth(root->left), depth(root->right));
+    //check balance
     int balance = getBalance(root);
-
+    //if it's unbalanced:
+    //LL Case
     if ((balance > 1) && (getBalance(root->left)>=0)){
         rightRotate(root);
     }
-    if (balance >1 && getBalance(root->left)<0) {
-        leftRotate(root->left);
-        rightRotate(root);
-    }
+    //RR Case
     if (balance <-1 && getBalance(root->right)<=0){
         leftRotate(root);
     }
+    //LR Case
+    if (balance >1 && getBalance(root->left)<0) {
+        root->left = leftRotate(root->left);
+        rightRotate(root);
+    }
+    //RL Case
     if (balance <-1 && getBalance(root->right)>0){
         root->right = rightRotate(root->right);
         leftRotate(root);
     }
+    return root;
 }
 /***
  * You will probably need auxiliary methods to
