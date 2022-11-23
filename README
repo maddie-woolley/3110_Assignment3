@@ -1,7 +1,20 @@
 Use the following command to compile:
 
 $ g++ avl.cpp
-
 Use the following command to test:
 
 ./a.out input1.txt
+
+This works due to a very specific flow.
+Insert nodes,
+automatically check if tree is balanced by calculating differences in subtree heights
+balance based on specific balance integers
+print
+
+Deleting is similar
+Delete flow is based off of the specific node to be deleted
+Root is the most complex
+Set new node as temp variable
+Set temp equal to root
+Delete original temp node
+Balance as mentioned above.
